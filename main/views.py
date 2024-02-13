@@ -155,9 +155,15 @@ class StadiumsListForUserViews(generics.GenericAPIView):
 
         if latitude and longitude:
             # Retrieve the queryset of stadiums sorted by closest distance
-            stadiums = Stadiums.closest_to_location(latitude, longitude)
+            stadiums_data = self.serializer_class(
+                stadiums, many=True, context={'latitude': latitude, 'longitude': longitude}
+            ).data
+            stadiums_data = sorted(stadiums_data, key=lambda x: x.get('distance', 0))
+
+        else:
+            stadiums_data = self.serializer_class(stadiums, many=True).data
 
         return response.Response({
             "success": True,
-            "data": self.serializer_class(stadiums, many=True).data
+            "data": stadiums_data
         })

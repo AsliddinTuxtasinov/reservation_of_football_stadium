@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from accounts.seializers import UserSerializers
 from main.models import Stadiums, StadiumsBooked, StadiumsPictures
+from main.utils import haversine
 
 
 class StadiumsListCreateSerializers(serializers.ModelSerializer):
@@ -23,6 +24,14 @@ class StadiumsListForUserSerializers(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep["stadium_owner"] = UserSerializers(instance.owner).data
+
+        latitude = self.context.get("latitude")
+        longitude = self.context.get("longitude")
+
+        if latitude and longitude:
+            rep["distance"] = haversine(
+                lat1=latitude, lon1=longitude, lat2=instance.latitude, lon2=instance.longitude
+            )
         return rep
 
 

@@ -3,4 +3,3 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
 python-decouple==3.8
 pillow==10.2.0
-geopy==2.4.1

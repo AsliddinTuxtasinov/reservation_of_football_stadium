@@ -1,9 +1,5 @@
 from django.db import models
-from django.db.models import F
 from django.utils import timezone
-
-# Assuming you've installed geopy library
-from geopy.distance import great_circle
 
 from accounts.enums import AccountRoleEnums
 from accounts.models import User
@@ -27,22 +23,6 @@ class Stadiums(BaseModel):
     price = models.DecimalField(max_digits=20, decimal_places=2)  # sum
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
-
-    @classmethod
-    def distance_annotation(cls, latitude, longitude, name='distance'):
-        """
-        Annotates each stadium with the distance from a given latitude and longitude.
-        """
-        # Use F expressions to refer to latitude and longitude fields
-        # return great_circle((latitude, longitude), (F('latitude'), F('longitude'))).km
-        return great_circle((latitude, longitude), ('latitude', 'longitude')).km
-
-    @classmethod
-    def closest_to_location(cls, latitude, longitude):
-        """
-        Returns a queryset of stadiums sorted by the closest distance to a given latitude and longitude.
-        """
-        return cls.objects.annotate(distance=cls.distance_annotation(latitude, longitude)).order_by('distance')
 
     def get_all_stadium_pictures(self):
         return self.images.all()
